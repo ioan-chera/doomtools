@@ -11,6 +11,22 @@ def get_palette(path):
     return palette
 
 
+def find_closest_color(rgb, palette):
+    """
+    Find the closest color
+    """
+    min_dist = 257 * 257 * 3
+    min_index = None
+
+    for index, pal_rgb in enumerate(palette):
+        distance = sum((rgb[n] - pal_rgb[n]) ** 2 for n in range(3))
+        if distance < min_dist:
+            min_dist = distance
+            min_index = index
+
+    return min_index, palette[min_index]
+
+
 def check_if_colors_are_in_palette(colors, palette):
     """
     True if list of colors (as returned by PIL image.getcolors) are in palette. Each color and palette entry must start
