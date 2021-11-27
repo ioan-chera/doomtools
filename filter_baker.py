@@ -4,43 +4,20 @@ import sys
 
 from PIL import Image
 
-
-def get_palette(path):
-    with open(path, 'rb') as f:
-        pal_raw = f.read(768)
-    palette = []
-    for index in range(256):
-        rgb = tuple(int(pal_raw[n]) for n in range(3 * index, 3 * index + 3))
-        palette.append(rgb)
-    return palette
-    
-    
-def check_if_colors_are_in_palette(colors, palette):
-    if colors is None:
-        return False
-    for pair in colors:
-        color = pair[1]
-        if not color[3]:
-            continue
-        if len(color) > 3:
-            color = color[:3]
-        if color not in palette:
-            return False
-    return True
-
-
-def check_if_flat(image):
-    if image.size != (64, 64):
-        return False
-    extrema = image.getextrema()
-    if extrema[3][0] < 255:
-        print("Flat but transparent")
-        return False    # flat
-    return True
-    
+from utils.palette import get_palette, check_if_colors_are_in_palette
+from utils.texture import check_if_flat
 
 
 def filter_baker():
+    """
+    Given:
+    - a WAD with TX_ textures stored as PNGs;
+    - a PLAYPAL extracted lump file;
+    produces another WAD where only the textures fitting exactly the palette are kept. Moreover, all 64x64 opaque tex-
+    tures are stored as flats.
+
+    Based on my wish to have a vanilla-compatible Baker's Texture Pack for Heretic.
+    """
     baker_path = sys.argv[1]
     palette_path = sys.argv[2]
     out_path = sys.argv[3]
