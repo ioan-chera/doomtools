@@ -71,7 +71,7 @@ class Patch:
     def save_to_path(self, path):
         with open(path, 'wb') as f:
             f.write(struct.pack('HHhh', self.width, self.height, self.x_offset, self.y_offset))
-            address = 8
+            address = 8 + 4 * self.width
             for column in self.columns:
                 f.write(struct.pack('I', address))
                 address += column.get_storage_size()

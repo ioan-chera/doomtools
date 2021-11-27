@@ -11,12 +11,15 @@ def get_palette(path):
     return palette
 
 
-def find_closest_color(rgb, palette):
+def find_closest_color(rgb, palette, cache=None):
     """
     Find the closest color
     """
     min_dist = 257 * 257 * 3
     min_index = None
+
+    if cache and rgb in cache:
+        return cache[rgb], palette[cache[rgb]]
 
     for index, pal_rgb in enumerate(palette):
         distance = sum((rgb[n] - pal_rgb[n]) ** 2 for n in range(3))
@@ -24,6 +27,8 @@ def find_closest_color(rgb, palette):
             min_dist = distance
             min_index = index
 
+    if cache:
+        cache[rgb] = min_index
     return min_index, palette[min_index]
 
 
